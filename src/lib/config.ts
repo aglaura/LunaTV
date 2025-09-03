@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, no-console, @typescript-eslint/no-non-null-assertion */
 
-import configJson from '../config/config.json'; // build-time JSON
+import configJson from '../../config.json'; // build-time JSON
 import { db } from './db';
 import { AdminConfig } from './admin.types';
 
