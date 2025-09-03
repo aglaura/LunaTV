@@ -137,7 +137,9 @@ export function refineConfig(adminConfig: AdminConfig): AdminConfig {
   let fileConfig: ConfigFileStruct = {} as ConfigFileStruct;
   try {
     fileConfig = JSON.parse(adminConfig.ConfigFile) as ConfigFileStruct;
-  } catch {}
+  } catch (e) {
+    console.error('Failed to parse ConfigFile:', e);
+  }
 
   // Merge API sites
   const currentApiSites = new Map(
