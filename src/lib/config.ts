@@ -103,7 +103,7 @@ async function getInitConfig(): Promise<AdminConfig> {
 
   // Add live sources
   Object.entries(cfgFile.lives || {}).forEach(([key, live]) => {
-    adminConfig.LiveConfig.push({
+    (adminConfig.LiveConfig ??= []).push({
       key,
       name: live.name,
       url: live.url,
