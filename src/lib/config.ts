@@ -75,7 +75,7 @@ async function getInitConfig(): Promise<AdminConfig> {
     UserConfig: { Users: [] },
     SourceConfig: [],
     CustomCategories: [],
-    LiveConfig: [],
+    LiveConfig: [], // ✅ initialize LiveConfig
   };
 
   // Add API sources
@@ -91,7 +91,7 @@ async function getInitConfig(): Promise<AdminConfig> {
   });
 
   // Add custom categories
-  Object.entries(cfgFile.custom_category || []).forEach(([, c]) => {
+  (cfgFile.custom_category || []).forEach((c) => {
     adminConfig.CustomCategories.push({
       name: c.name || c.query,
       type: c.type,
@@ -103,7 +103,7 @@ async function getInitConfig(): Promise<AdminConfig> {
 
   // Add live sources
   Object.entries(cfgFile.lives || {}).forEach(([key, live]) => {
-    adminConfig.LiveConfig.push({
+    adminConfig.LiveConfig!.push({
       key,
       name: live.name,
       url: live.url,
@@ -140,7 +140,9 @@ export function refineConfig(adminConfig: AdminConfig): AdminConfig {
   } catch {}
 
   // Merge API sites
-  const currentApiSites = new Map((adminConfig.SourceConfig || []).map((s) => [s.key, s]));
+  const currentApiSites = new Map(
+    (adminConfig.SourceConfig || []).map((s) => [s.key, s])
+  );
   Object.entries(fileConfig.api_site || {}).forEach(([key, site]) => {
     const existing = currentApiSites.get(key);
     if (existing) {
@@ -173,7 +175,9 @@ export function refineConfig(adminConfig: AdminConfig): AdminConfig {
   adminConfig.CustomCategories = Array.from(currentCustomCategories.values());
 
   // Merge live sources
-  const currentLives = new Map((adminConfig.LiveConfig || []).map((l) => [l.key, l]));
+  const currentLives = new Map(
+    (adminConfig.LiveConfig || []).map((l) => [l.key, l])
+  );
   Object.entries(fileConfig.lives || {}).forEach(([key, live]) => {
     const existing = currentLives.get(key);
     if (existing) {
