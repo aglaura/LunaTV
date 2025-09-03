@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, no-console, @typescript-eslint/no-non-null-assertion */
 
+import configJson from '../../config.json'; // build-time JSON
 import { db } from './db';
 import { AdminConfig } from './admin.types';
-import configJson from '../../config.json'; // build-time JSON
 
 export interface ApiSite {
   key: string;
@@ -75,7 +75,7 @@ async function getInitConfig(): Promise<AdminConfig> {
     UserConfig: { Users: [] },
     SourceConfig: [],
     CustomCategories: [],
-    LiveConfig: [], // ensure initialized
+    LiveConfig: [],
   };
 
   // Add API sources
@@ -91,7 +91,7 @@ async function getInitConfig(): Promise<AdminConfig> {
   });
 
   // Add custom categories
-  (cfgFile.custom_category || []).forEach((c) => {
+  Object.entries(cfgFile.custom_category || []).forEach(([, c]) => {
     adminConfig.CustomCategories.push({
       name: c.name || c.query,
       type: c.type,
@@ -102,7 +102,7 @@ async function getInitConfig(): Promise<AdminConfig> {
   });
 
   // Add live sources
-  (cfgFile.lives || {}).forEach(([key, live]) => {
+  Object.entries(cfgFile.lives || {}).forEach(([key, live]) => {
     adminConfig.LiveConfig.push({
       key,
       name: live.name,
@@ -137,9 +137,7 @@ export function refineConfig(adminConfig: AdminConfig): AdminConfig {
   let fileConfig: ConfigFileStruct = {} as ConfigFileStruct;
   try {
     fileConfig = JSON.parse(adminConfig.ConfigFile) as ConfigFileStruct;
-  } catch (e) {
-    console.error('Failed to parse ConfigFile', e);
-  }
+  } catch {}
 
   // Merge API sites
   const currentApiSites = new Map((adminConfig.SourceConfig || []).map((s) => [s.key, s]));
@@ -151,14 +149,7 @@ export function refineConfig(adminConfig: AdminConfig): AdminConfig {
       existing.detail = site.detail;
       existing.from = 'config';
     } else {
-      currentApiSites.set(key, {
-        key,
-        name: site.name,
-        api: site.api,
-        detail: site.detail,
-        from: 'config',
-        disabled: false,
-      });
+      currentApiSites.set(key, { key, name: site.name, api: site.api, detail: site.detail, from: 'config', disabled: false });
     }
   });
   adminConfig.SourceConfig = Array.from(currentApiSites.values());
@@ -176,19 +167,12 @@ export function refineConfig(adminConfig: AdminConfig): AdminConfig {
       existing.query = c.query;
       existing.from = 'config';
     } else {
-      currentCustomCategories.set(key, {
-        name: c.name || c.query,
-        type: c.type,
-        query: c.query,
-        from: 'config',
-        disabled: false,
-      });
+      currentCustomCategories.set(key, { name: c.name || c.query, type: c.type, query: c.query, from: 'config', disabled: false });
     }
   });
   adminConfig.CustomCategories = Array.from(currentCustomCategories.values());
 
   // Merge live sources
-  adminConfig.LiveConfig ??= [];
   const currentLives = new Map((adminConfig.LiveConfig || []).map((l) => [l.key, l]));
   Object.entries(fileConfig.lives || {}).forEach(([key, live]) => {
     const existing = currentLives.get(key);
@@ -198,16 +182,7 @@ export function refineConfig(adminConfig: AdminConfig): AdminConfig {
       existing.ua = live.ua;
       existing.epg = live.epg;
     } else {
-      currentLives.set(key, {
-        key,
-        name: live.name,
-        url: live.url,
-        ua: live.ua,
-        epg: live.epg,
-        channelNumber: 0,
-        from: 'config',
-        disabled: false,
-      });
+      currentLives.set(key, { key, name: live.name, url: live.url, ua: live.ua, epg: live.epg, channelNumber: 0, from: 'config', disabled: false });
     }
   });
   adminConfig.LiveConfig = Array.from(currentLives.values());
@@ -239,11 +214,11 @@ export async function getConfig(): Promise<AdminConfig> {
 // ----------------------
 // Self-check for safety & dedup
 export function configSelfCheck(adminConfig: AdminConfig): AdminConfig {
-  adminConfig.UserConfig ??= { Users: [] };
-  adminConfig.UserConfig.Users ??= [];
-  adminConfig.SourceConfig ??= [];
-  adminConfig.CustomCategories ??= [];
-  adminConfig.LiveConfig ??= [];
+  if (!adminConfig.UserConfig) adminConfig.UserConfig = { Users: [] };
+  if (!adminConfig.UserConfig.Users) adminConfig.UserConfig.Users = [];
+  if (!adminConfig.SourceConfig) adminConfig.SourceConfig = [];
+  if (!adminConfig.CustomCategories) adminConfig.CustomCategories = [];
+  if (!adminConfig.LiveConfig) adminConfig.LiveConfig = [];
 
   const ownerUser = process.env.USERNAME;
 
