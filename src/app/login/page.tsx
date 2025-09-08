@@ -79,12 +79,12 @@ function LoginPageClient() {
   const { siteName } = useSite();
 
   // 在客户端挂载后设置配置
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storageType = (window as any).RUNTIME_CONFIG?.STORAGE_TYPE;
-      setShouldAskUsername(storageType && storageType !== 'localstorage');
-    }
-  }, []);
+  //useEffect(() => {
+  //  if (typeof window !== 'undefined') {
+  //    const storageType = (window as any).RUNTIME_CONFIG?.STORAGE_TYPE;
+  //    setShouldAskUsername(storageType && storageType !== 'localstorage');
+  //  }
+ // }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
