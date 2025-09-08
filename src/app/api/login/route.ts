@@ -49,7 +49,7 @@ async function generateAuthCookie(
   role?: 'owner' | 'admin' | 'user',
   includePassword = false
 ): Promise<string> {
-  const authData: any = { role: role || 'user' };
+  const authData: any = { role: role || 'admin' };
 
   // 只在需要时包含 password
   if (includePassword && password) {
