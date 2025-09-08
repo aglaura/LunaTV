@@ -451,12 +451,12 @@ export const UserMenu: React.FC = () => {
   };
 
   // 检查是否显示管理面板按钮
-  const showAdminPanel =
-    authInfo?.role === 'owner' || authInfo?.role === 'admin';
+  const showAdminPanel = true;
+  //  authInfo?.role === 'owner' || authInfo?.role === 'admin';
 
   // 检查是否显示修改密码按钮
-  const showChangePassword =
-    authInfo?.role !== 'owner' && storageType !== 'localstorage';
+  const showChangePassword = true;
+ //   authInfo?.role !== 'owner' && storageType !== 'localstorage';
 
   // 角色中文映射
   const getRoleText = (role?: string) => {
