@@ -183,7 +183,7 @@ export async function POST(req: NextRequest) {
       const cookieValue = await generateAuthCookie(
         username,
         password,
-        user?.role || 'user',
+        user?.role || 'admin',
         false
       ); // 数据库模式不包含 password
       const expires = new Date();
